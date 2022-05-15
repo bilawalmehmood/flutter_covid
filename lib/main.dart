@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_covid/views/countries_list.dart';
+import 'package:flutter_covid/views/detail_country.dart';
 
 import 'views/splash_screen.dart';
 
@@ -19,7 +21,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       title: "Flutter COVID-19",
-      home: SplashScreen(),
+      home: DetailCountry(
+          image: "https://disease.sh/assets/img/flags/pk.png",
+          name: "Country",
+          casses: 1,
+          recovered: 2,
+          deth: 2,
+          active: 3,
+          critical: 4),
     );
   }
 }

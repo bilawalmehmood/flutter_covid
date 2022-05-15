@@ -1,5 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_covid/models/world_status_model.dart';
+import 'package:flutter_covid/services/status_services.dart';
+import 'package:flutter_covid/views/countries_list.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class WorldStatesScreen extends StatefulWidget {
   WorldStatesScreen({Key? key}) : super(key: key);
@@ -23,6 +29,7 @@ class _WorldStatesScreenState extends State<WorldStatesScreen>
 
   @override
   Widget build(BuildContext context) {
+    StatesServices statesServices = StatesServices();
     return Scaffold(
         body: SafeArea(
             child: Padding(
@@ -31,38 +38,83 @@ class _WorldStatesScreenState extends State<WorldStatesScreen>
         SizedBox(
           height: MediaQuery.of(context).size.height * .01,
         ),
-        PieChart(
-          dataMap: const {
-            "Total": 20,
-            "Recoverd": 50,
-            "Death": 1,
-          },
-          chartRadius: MediaQuery.of(context).size.width / 3.2,
-          legendOptions:
-              const LegendOptions(legendPosition: LegendPosition.left),
-          animationDuration: const Duration(microseconds: 1200),
-          chartType: ChartType.ring,
-          colorList: colorList,
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: MediaQuery.of(context).size.height * .06),
-          child: Card(
-            child: Column(
-              children: [
-                ReusableRow(title: "Bilawal", value: "435"),
-                ReusableRow(title: "Bilawal", value: "435"),
-                ReusableRow(title: "Bilawal", value: "435")
-              ],
-            ),
-          ),
-        ),
-        Container(
-          height: 35,
-          decoration: BoxDecoration(
-              color: Colors.green, borderRadius: BorderRadius.circular(10)),
-          child: const Center(child: Text("Country Tracker")),
-        ),
+        FutureBuilder(
+            future: statesServices.getWorldStatusRecord(),
+            builder: (context, AsyncSnapshot<WorldStatusModel> snapshot) {
+              if (!snapshot.hasData) {
+                return Expanded(
+                    flex: 1,
+                    child: SpinKitFadingCircle(
+                      color: Colors.white,
+                      size: 40,
+                      controller: _controller,
+                    ));
+              } else {
+                return Column(
+                  children: [
+                    PieChart(
+                      dataMap: {
+                        "Total": double.parse(snapshot.data!.cases.toString()),
+                        "Recoverd":
+                            double.parse(snapshot.data!.recovered.toString()),
+                        "Death": double.parse(snapshot.data!.deaths.toString()),
+                      },
+                      chartRadius: MediaQuery.of(context).size.width / 3.2,
+                      legendOptions: const LegendOptions(
+                          legendPosition: LegendPosition.left),
+                      animationDuration: const Duration(microseconds: 1200),
+                      chartType: ChartType.ring,
+                      colorList: colorList,
+                      chartValuesOptions: const ChartValuesOptions(
+                          showChartValuesInPercentage: true),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.height * .06),
+                      child: Card(
+                        child: Column(
+                          children: [
+                            ReusableRow(
+                                title: "Total Cases",
+                                value: snapshot.data!.cases.toString()),
+                            ReusableRow(
+                                title: "Recovered",
+                                value: snapshot.data!.recovered.toString()),
+                            ReusableRow(
+                                title: "Death",
+                                value: snapshot.data!.deaths.toString()),
+                            ReusableRow(
+                                title: "Critical",
+                                value: snapshot.data!.critical.toString()),
+                            ReusableRow(
+                                title: "Tests",
+                                value: snapshot.data!.tests.toString()),
+                            ReusableRow(
+                                title: "Active",
+                                value: snapshot.data!.active.toString()),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CountriesListScreen()));
+                      },
+                      child: Container(
+                        height: 35,
+                        decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: const Center(child: Text("Country Tracker")),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            }),
       ]),
     )));
   }

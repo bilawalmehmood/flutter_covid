@@ -2,9 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_covid/views/world_state_screen.dart';
 import 'dart:math' as math;
-import 'package:http/http.dart';
-import 'package:pie_chart/pie_chart.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 import 'package:shimmer/shimmer.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -45,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Container(
                 height: 200,
                 width: 200,
-                child: Center(
+                child: const Center(
                     child: Image(
                   image: AssetImage('images/covid.jpg'),
                 )),
@@ -60,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
           SizedBox(
             height: MediaQuery.of(context).size.height * .08,
           ),
-          Align(
+          const Align(
             alignment: Alignment.center,
             child: Text(
               "Covid-19\nTracker App",
